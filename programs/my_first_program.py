@@ -1,19 +1,11 @@
 from nada_dsl import *
 
-def nada_main():
-    # Define the party and inputs
-    party1 = Party(name="Party1")
-    my_int1 = SecretInteger(Input(name="my_int1", party=party1))
-    my_int2 = SecretInteger(Input(name="my_int2", party=party1))
+def nada_main(op="add"):
+    p = Party("Party1")
+    a, b = SecretInteger(Input("my_int1", p)), SecretInteger(Input("my_int2", p))
+    r = {"add": a + b, "sub": a - b, "mul": a * b, "div": a / b if b else float('inf')}.get(op)
+    return [Output(r, "result_output", p)]
 
-    # Perform a computation on the inputs (example: addition)
-    result = my_int1 + my_int2
-
-    # Return the result as output
-    return [Output(result, "result_output", party1)]
-
-# Run the function to see the output (assuming a testing environment)
 if __name__ == "__main__":
-    outputs = nada_main()
-    for output in outputs:
-        print(f"Output name: {output.name}, Value: {output.value}, Party: {output.party.name}")
+    for o in nada_main("add"):
+        print(f"Output name: {o.name}, Value: {o.value}, Party: {o.party.name}")
